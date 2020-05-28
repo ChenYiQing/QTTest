@@ -1,5 +1,7 @@
 import tushare as ts
 import pandas  as pd
+import requests
+
 
 
 
@@ -15,7 +17,7 @@ class DataControllerClass():
 
 	# 获取日K
 	def GetDailyShare(self):
-		df = self.pro.daily(ts_code='000002.SZ', start_date='20170701', end_date='20180718')
+		df = self.pro.daily(ts_code='000002.SZ', start_date='20200501', end_date='20200528')
 		print(df)
 		print(len(df))
 
@@ -75,9 +77,30 @@ class DataControllerClass():
 		df['Ma60'] = df.close.rolling(window=60).mean()
 		return df
 
+	# 获取实时数据
+	def GetTodayDateFromSina(self,sinaCode):
+		# sz 深圳
+		# sh 上海
+		# content=requests.get('http://hq.sinajs.cn/?format=json&list=sh600000').text
+		httpStr = 'http://hq.sinajs.cn/?format=json&list='+sinaCode
+		content=requests.get(httpStr).text
+		list = content.split(',')
+		open = list[1]
+		current = list[3]
+		high = list[4]
+		low = list[5]
+		date = list[-4]
+		date = date[0:4]+date[5:7]+date[8:10]
+		return open,current,high,low,date
+
+
+
+
+
 # dataController = DataControllerClass()
-# dataController.GetQFQData()
+# df_stockload = dataController.GetQFQData('000002.SZ','D','20200520','20200529')	
+# print(df_stockload.tail())
 
-
+# dataController.GetTodayDateFromSina()
 # https://tushare.pro/document/1?doc_id=108
 # qq 米哥

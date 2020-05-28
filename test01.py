@@ -126,15 +126,31 @@ def Infer():
 
 	findList = []
 	for index in df300s.index:
+	# for index in range(5):
 		print(index)
 		initCode = df300s.loc[index,'code']
 		code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
-		print(code)
-		print(codeName)
+		print(code+' '+codeName)
+
 		if 'ST' in codeName:
 			pass
 		else:
 			df_stockload =  dataController.GetQFQData(code,'D',preMonth,currentTime)	
+			# 补充当天盘中数据
+			sinaCode = ''
+			if 'SZ' in code:
+				sinaCode = 'sz'+code[0:6]
+			if 'SH' in code:
+				sinaCode = 'sh'+code[0:6]
+			open,current,high,low,date = dataController.GetTodayDateFromSina(sinaCode)
+			# print(open+' '+current+' '+high+' '+low)
+			id = df_stockload.shape[0]
+			if df_stockload.loc[id-1,'trade_date']==date:
+				pass
+			else:
+				df_stockload.loc[id]=[code,date,float(open),float(high),float(low),float(current),'','','','','']
+			# print(df_stockload)
+
 			if df_stockload is None:
 				pass
 			else:
@@ -166,11 +182,30 @@ def LoadCsv():
 	print(df)
 
 
+
+# 获取今日股价
+def GetTodayDate():
+	dataController = DataControllerClass()
+	df300s = dataController.GetHS300s()
+	df_all = dataController.ShowAllShares()
+	for index in df300s.index:
+		initCode = df300s.loc[index,'code']
+		code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
+		# print(code)
+		sinaCode = ''
+		if 'SZ' in code:
+			sinaCode = 'sz'+code[0:6]
+		if 'SH' in code:
+			sinaCode = 'sh'+code[0:6]
+		# print(sinaCode)
+		open,current,high,low,date = dataController.GetTodayDateFromSina(sinaCode)
+		print(open+' '+current+' '+high+' '+low)
+
 # SingleTest()
 # TotalTest()
-# Infer()
+Infer()
 # SaveCsv()
-
+# GetTodayDate()
 
 
 

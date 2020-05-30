@@ -63,8 +63,9 @@ def TotalTest():
 		code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
 		print(str(index)+':'+code +'-'+ codeName)
 		# 线上获取
-		df_stockload =  dataController.GetQFQData(code,'D','20110301','20120301')	
-		# 从csv载入
+		# df_stockload =  dataController.GetQFQData(code,'D','20110301','20120301')	
+		df_stockload =  dataController.GetQFQData(code,'W','20130301','20140301')	
+		# 从csv载入 W
 		# df_stockload = dataController.GetQFQDataFromCSV(code)
 
 		if df_stockload is None:
@@ -114,15 +115,22 @@ def PreMonthDate(time2):
 	otherStyleTime = threeDayAgo.strftime("%Y%m%d")
 	return otherStyleTime
 
+def PreHalfYearDate(time2):
+	now_time = datetime.datetime.strptime(time2, '%Y%m%d')
+	threeDayAgo = (now_time - datetime.timedelta(days =180))
+	timeStamp =int(time.mktime(threeDayAgo.timetuple()))
+	otherStyleTime = threeDayAgo.strftime("%Y%m%d")
+	return otherStyleTime
+
 # 实时监控
-def Infer():
+def Infer(type):
 	dataController = DataControllerClass()
 	df300s = dataController.GetHS300s()
 	df_all = dataController.ShowAllShares()
 
 	currentTime = time.strftime("%Y%m%d", time.localtime()) 
 	preMonth = PreMonthDate(currentTime)
-
+	preHalfYear = PreHalfYearDate(currentTime)
 
 	findList = []
 	for index in df300s.index:
@@ -135,21 +143,26 @@ def Infer():
 		if 'ST' in codeName:
 			pass
 		else:
-			df_stockload =  dataController.GetQFQData(code,'D',preMonth,currentTime)	
-			# 补充当天盘中数据
-			sinaCode = ''
-			if 'SZ' in code:
-				sinaCode = 'sz'+code[0:6]
-			if 'SH' in code:
-				sinaCode = 'sh'+code[0:6]
-			open,current,high,low,date = dataController.GetTodayDateFromSina(sinaCode)
-			# print(open+' '+current+' '+high+' '+low)
-			id = df_stockload.shape[0]
-			if df_stockload.loc[id-1,'trade_date']==date:
-				pass
-			else:
-				df_stockload.loc[id]=[code,date,float(open),float(high),float(low),float(current),'','','','','']
-			# print(df_stockload)
+			if type =='D':
+				df_stockload =  dataController.GetQFQData(code,'D',preMonth,currentTime)	
+				# 补充当天盘中数据
+				sinaCode = ''
+				if 'SZ' in code:
+					sinaCode = 'sz'+code[0:6]
+				if 'SH' in code:
+					sinaCode = 'sh'+code[0:6]
+				open,current,high,low,date = dataController.GetTodayDateFromSina(sinaCode)
+				# print(open+' '+current+' '+high+' '+low)
+				id = df_stockload.shape[0]
+				if df_stockload.loc[id-1,'trade_date']==date:
+					pass
+				else:
+					df_stockload.loc[id]=[code,date,float(open),float(high),float(low),float(current),'','','','','']
+				# print(df_stockload)
+			
+			if type == 'W':
+				df_stockload =  dataController.GetQFQData(code,'D',preHalfYear,currentTime)
+
 
 			if df_stockload is None:
 				pass
@@ -159,6 +172,7 @@ def Infer():
 				print(res)
 				if res:
 					findList.append(code+' '+codeName)
+				print(findList)
 	print(currentTime)
 	print(findList)
 	a = input('enter finish...')
@@ -173,7 +187,7 @@ def SaveCsv():
 		print(index)
 		initCode = df300s.loc[index,'code']
 		code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
-		df_stockload =  dataController.GetQFQData(code,'D','20000301','20200301')	
+		df_stockload =  dataController.GetQFQData(code,'W','20000301','20200301')	
 		df_stockload.to_csv('.//HisData//'+code+'.csv')
 
 # 载入数据
@@ -203,7 +217,7 @@ def GetTodayDate():
 
 # SingleTest()
 # TotalTest()
-Infer()
+Infer('W')
 # SaveCsv()
 # GetTodayDate()
 

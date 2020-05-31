@@ -2,12 +2,23 @@ import random
 
 
 
+# 18-19
+# 359
+# 108
+# 146
+
+## 29-20
+# 401
+# 121
+# 151
+
 
 price = 1.0
 
-for i in range(400):
-	randNum = random.randint(1,4)
-	if randNum==1:
+for i in range(151):
+	randNum = random.randint(1,467)
+	print(randNum)
+	if randNum<121:
 		price = price*0.99
 		print('loss:'+str(price))
 	else:

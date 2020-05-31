@@ -64,10 +64,12 @@ class StrategyControllerClass():
 		ShortTradeTimes = 0
 		LongTradeTimes = 0
 		ShortDateList = []
+		tradeDateList = []
 		daysList = []
 
 		totalWinTimes = 0
 		totalLossTimes= 0
+
 
 		for index in df_data.index:
 			if index > 6 and index< df_data.shape[0]-1:
@@ -110,14 +112,16 @@ class StrategyControllerClass():
 								print(str(df_data.loc[cursor,'trade_date'])+' for win')
 
 							totalWinTimes = totalWinTimes+1
+							tradeDateList.append(str(df_data.loc[cursor,'trade_date']))
 							break
 
-						# 超过0.05 止损
+						# 超过0.01 止损
 						if (buyPoint-df_data.loc[cursor,'high'])/buyPoint > lossAlpha:
 							# print('loss')
 							if printInfo:
 								print(str(df_data.loc[cursor,'trade_date'])+' for loss')
 							totalLossTimes = totalLossTimes+1
+							tradeDateList.append(str(df_data.loc[cursor,'trade_date']))
 							break
 
 						if df_data.shape[0]-1 >cursor:
@@ -152,7 +156,7 @@ class StrategyControllerClass():
 			print('累计盈亏：'+str(total))
 			print('断线盈亏：'+str(totalWith30Days))
 		# return totalWith30Days,ShortTradeTimes,LongTradeTimes,ShortDateList,daysList
-		return totalWinTimes,totalLossTimes
+		return totalWinTimes,totalLossTimes,tradeDateList
 
 	def Strategy02Infer(self,df_data):
 		index = df_data.shape[0]-1

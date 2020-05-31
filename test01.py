@@ -57,14 +57,17 @@ def TotalTest():
 	winTotal = 0
 	lossTotal = 0 
 
+	existTotal = 0
+	dayCover = []
+
 	for index in df300s.index:
 	# for index in range(10):
 		initCode = df300s.loc[index,'code']
 		code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
 		print(str(index)+':'+code +'-'+ codeName)
 		# 线上获取
-		# df_stockload =  dataController.GetQFQData(code,'D','20110301','20120301')	
-		df_stockload =  dataController.GetQFQData(code,'W','20130301','20140301')	
+		df_stockload =  dataController.GetQFQData(code,'D','20190101','20200101')	
+		# df_stockload =  dataController.GetQFQData(code,'W','20180101','20190101')	
 		# 从csv载入 W
 		# df_stockload = dataController.GetQFQDataFromCSV(code)
 
@@ -75,11 +78,13 @@ def TotalTest():
 			strategyController = StrategyControllerClass()
 			# total = strategyController.Strategy01(df_stockload)
 			# total,shortTimes,longTimes,shortDate,daysList = strategyController.Strategy02(df_stockload,False)
-			win,loss = strategyController.Strategy02(df_stockload,False)
+			win,loss,tradeDateList = strategyController.Strategy02(df_stockload,False)
+			dayCover = dayCover + tradeDateList
 			# shortDateList = shortDateList+shortDate
 			# keepDaysList = keepDaysList+daysList
 			winTotal = winTotal + win
 			lossTotal = lossTotal + loss
+			existTotal = existTotal + 1
 		# print(code +'-'+ codeName)
 		# print('短线盈亏：'+str(total))
 		# print('短线交易次数：',shortTimes)
@@ -87,6 +92,8 @@ def TotalTest():
 		# shortCount = shortCount + shortTimes
 		# longCount = longCount + longTimes
 		print('------------------------------------')
+	print('有数据股票数：')
+	print(existTotal)
 	print('计数:')
 	# print(shortCount)
 	# print(longCount)
@@ -94,6 +101,10 @@ def TotalTest():
 	print(lossTotal)
 	# print('日期覆盖:')
 	# print(len(shortDateList))
+	dayCover = list(set(dayCover))
+	print('日期覆盖')
+	print(len(dayCover))
+	print(dayCover)
 	# shortDateList = list(set(shortDateList))
 	# print(len(shortDateList))
 
@@ -216,8 +227,8 @@ def GetTodayDate():
 		print(open+' '+current+' '+high+' '+low)
 
 # SingleTest()
-# TotalTest()
-Infer('W')
+TotalTest()
+# Infer('W')
 # SaveCsv()
 # GetTodayDate()
 

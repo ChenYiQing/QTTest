@@ -93,6 +93,20 @@ class DataControllerClass():
 		date = date[0:4]+date[5:7]+date[8:10]
 		return open,current,high,low,date
 
+	# 从腾讯获取数据
+	def GetDataFromTencent(self,apiCode):
+		# httpStr = 'http://data.gtimg.cn/flashdata/hushen/latest/weekly/sz000002.js?maxage=43201'
+		httpStr = 'http://data.gtimg.cn/flashdata/hushen/latest/weekly/'+apiCode+'.js?maxage=43201'
+		content=requests.get(httpStr).text
+		list = content.split('\n')
+		item = list[-2]
+		values = item.split(' ')
+		date = '20'+values[0][0:2]+values[0][2:4]+values[0][4:6]
+		open = values[1]
+		close = values[2]
+		high = values[3]
+		low = values[4]
+		return open,close,high,low,date
 
 
 
@@ -100,6 +114,8 @@ class DataControllerClass():
 # dataController = DataControllerClass()
 # df_stockload = dataController.GetQFQData('000002.SZ','D','20200520','20200529')	
 # print(df_stockload.tail())
+# dataController.GetDataFromTencent('sz000002')
+
 
 # dataController.GetTodayDateFromSina()
 # https://tushare.pro/document/1?doc_id=108

@@ -145,7 +145,7 @@ def Infer(type):
 
 	findList = []
 	for index in df300s.index:
-	# for index in range(5):
+	# for index in range(2):
 		print(index)
 		initCode = df300s.loc[index,'code']
 		code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
@@ -169,10 +169,23 @@ def Infer(type):
 					pass
 				else:
 					df_stockload.loc[id]=[code,date,float(open),float(high),float(low),float(current),'','','','','']
-				# print(df_stockload)
-			
+				print(df_stockload)
+
 			if type == 'W':
-				df_stockload =  dataController.GetQFQData(code,'D',preHalfYear,currentTime)
+				df_stockload =  dataController.GetQFQData(code,'W',preHalfYear,currentTime)
+				apiCode = ''
+				if 'SZ' in code:
+					apiCode = 'sz'+code[0:6]
+				if 'SH' in code:
+					apiCode = 'sh'+code[0:6]
+				open,close,high,low,date = dataController.GetDataFromTencent(apiCode)
+				# print(open+' '+close+' '+high+' '+low)
+				id = df_stockload.shape[0]
+				if df_stockload.loc[id-1,'trade_date']==date:
+					pass
+				else:
+					df_stockload.loc[id]=[code,date,float(close),float(open),float(high),float(low),'','','','','']
+				print(df_stockload)
 
 
 			if df_stockload is None:
@@ -227,8 +240,9 @@ def GetTodayDate():
 		print(open+' '+current+' '+high+' '+low)
 
 # SingleTest()
-TotalTest()
-# Infer('W')
+# TotalTest()
+Infer('W')
+# Infer('D')
 # SaveCsv()
 # GetTodayDate()
 

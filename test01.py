@@ -16,6 +16,7 @@ def SingleTest():
 	codeName = '中国平安'
 	codeName = '海康威视'
 	codeName = '宝钢股份'
+	codeName = 'TCL科技'
 
 	df_all = dataController.ShowAllShares()
 
@@ -27,13 +28,15 @@ def SingleTest():
 	print(code +'-'+ codeName)
 	# code = '002415.SZ'
 	
-	# df_stockload =  dataController.GetQFQData(code,'D','20150301','20200301')
-	df_stockload = dataController.GetQFQDataFromCSV(code)
+	df_stockload =  dataController.GetQFQData(code,'D','20200301','20200602')
+	# df_stockload = dataController.GetQFQDataFromCSV(code)
 
 	df_stockload  = dataController.GetFullData(df_stockload)
+	print(df_stockload)
 	strategyController = StrategyControllerClass()
 	# total = strategyController.Strategy01(df_stockload)
-	total,shortTimes,longTimes,shortDate,daysList= strategyController.Strategy02(df_stockload,True)
+	# total,shortTimes,longTimes,shortDate,daysList= strategyController.Strategy02(df_stockload,True)
+	win,loss,tradeDateList = strategyController.Strategy02(df_stockload,False)
 
 
 	# 可视化 查看亏损原因
@@ -169,7 +172,6 @@ def Infer(type):
 					pass
 				else:
 					df_stockload.loc[id]=[code,date,float(open),float(high),float(low),float(current),'','','','','']
-				print(df_stockload)
 
 			if type == 'W':
 				df_stockload =  dataController.GetQFQData(code,'W',preHalfYear,currentTime)
@@ -185,7 +187,7 @@ def Infer(type):
 					pass
 				else:
 					df_stockload.loc[id]=[code,date,float(close),float(open),float(high),float(low),'','','','','']
-				print(df_stockload)
+				# print(df_stockload)
 
 
 			if df_stockload is None:
@@ -241,8 +243,8 @@ def GetTodayDate():
 
 # SingleTest()
 # TotalTest()
-Infer('W')
-# Infer('D')
+# Infer('W')
+Infer('D')
 # SaveCsv()
 # GetTodayDate()
 

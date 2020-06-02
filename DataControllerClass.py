@@ -89,7 +89,7 @@ class DataControllerClass():
 		current = list[3]
 		high = list[4]
 		low = list[5]
-		date = list[-4]
+		date = list[30]
 		date = date[0:4]+date[5:7]+date[8:10]
 		return open,current,high,low,date
 

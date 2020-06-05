@@ -98,8 +98,8 @@ class StrategyControllerClass():
 					buyPoint = df_data.loc[index,'close']
 					# 盈亏
 					cursor = index+1
-					winAlpha = 0.01
-					lossAlpha = 0.01
+					winAlpha = 0.02
+					lossAlpha = 0.02
 
 					# while abs(df_data.loc[cursor,'high']-buyPoint)/buyPoint < alpha or abs(df_data.loc[cursor,'low']-buyPoint)/buyPoint < alpha:
 					# 止盈不止损

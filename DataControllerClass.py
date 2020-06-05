@@ -1,6 +1,7 @@
 import tushare as ts
 import pandas  as pd
 import requests
+import os
 
 
 
@@ -65,8 +66,12 @@ class DataControllerClass():
 		return df
 
 	def GetQFQDataFromCSV(self,code):
-		df = pd.read_csv('.//HisData//'+code+'.csv',index_col=0)
-		return df
+		filePath = './/HisData//'+code+'.csv'
+		if os.path.exists(filePath):
+			df = pd.read_csv(filePath,index_col=0)
+			return True,df
+		else:
+			return False,0
 
 	def GetFullData(self,df):
 		df['Ma5'] = df.close.rolling(window=5).mean()

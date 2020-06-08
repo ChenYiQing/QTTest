@@ -81,7 +81,7 @@ def TotalTest():
 		# df_stockload =  dataController.GetQFQData(code,'D','20190101','20200101')	
 		# df_stockload =  dataController.GetQFQData(code,'W','20180101','20190101')	
 		# 从csv载入 W
-		res,df_stockload = dataController.GetQFQDataFromCSV(code)
+		res,df_stockload = dataController.GetQFQDataFromCSV(code,'all','W')
 		if res:
 			if df_stockload is None:
 				pass
@@ -201,7 +201,7 @@ def Infer(type):
 
 				print(open+' '+close+' '+high+' '+low+' '+date)
 				id = df_stockload.shape[0]
-				if len(df_stockload.index)==0:
+				if len(df_stockload.index)<10:
 					pass
 				else: 
 					if df_stockload.loc[id-1,'trade_date']==date:
@@ -209,8 +209,7 @@ def Infer(type):
 					else:
 						df_stockload.loc[id]=[code,date,float(close),float(open),float(high),float(low),'','','','','']
 
-
-			if df_stockload is None or len(df_stockload.index)==0:
+			if df_stockload is None or len(df_stockload.index)<10:
 				pass
 			else:
 				strategyController = StrategyControllerClass()
@@ -225,24 +224,35 @@ def Infer(type):
 
 
 # 保存成离线数据
-def SaveCsv():
+def SaveCsv(timeType,areaType,startDate,endDate):
 	dataController = DataControllerClass()
 	df300s = dataController.GetHS300s()
 	df_all = dataController.ShowAllShares()
 
-	# for index in df300s.index:
-	# 	print(index)
-	# 	initCode = df300s.loc[index,'code']
-	# 	code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
-	for index in df_all.index:
-		print(index)
-		code = df_all.loc[index,'ts_code']
-		codeName = df_all.loc[index,'name']
-		df_stockload =  dataController.GetQFQData(code,'W','20190301','20200301')
-		if df_stockload is None:
-			pass
-		else:
-			df_stockload.to_csv('.//HisData//'+code+'.csv')
+	if areaType=='300':
+		for index in df300s.index:
+			print(index)
+			initCode = df300s.loc[index,'code']
+			code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
+			df_stockload =  dataController.GetQFQData(code,timeType,startDate,endDate)
+			if df_stockload is None:
+				pass
+			else:
+				df_stockload.to_csv('.//HisData//300//'+timeType+'//'+code+'.csv')
+		time.sleep(0.1)
+
+	if areaType=='all':
+		for index in df_all.index:
+			print(index)
+			code = df_all.loc[index,'ts_code']
+			codeName = df_all.loc[index,'name']
+			df_stockload =  dataController.GetQFQData(code,timeType,startDate,endDate)
+			if df_stockload is None:
+				pass
+			else:
+				df_stockload.to_csv('.//HisData//all//'+timeType+'//'+code+'.csv')
+		time.sleep(0.1)
+
 
 # 载入数据
 def LoadCsv():
@@ -269,11 +279,16 @@ def GetTodayDate():
 		open,current,high,low,date = dataController.GetTodayDateFromSina(sinaCode)
 		print(open+' '+current+' '+high+' '+low)
 
+
+
+
+
+
 # SingleTest()
-# TotalTest()
-Infer('W')
+TotalTest()
+# Infer('W')
 # Infer('D')
-# SaveCsv()
+# SaveCsv('D','all','20000101','20200101')
 # GetTodayDate()
 
 

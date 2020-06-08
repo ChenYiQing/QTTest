@@ -65,8 +65,10 @@ class DataControllerClass():
 			df.reset_index(drop=True, inplace=True)
 		return df
 
-	def GetQFQDataFromCSV(self,code):
-		filePath = './/HisData//'+code+'.csv'
+	# areaType:300 all 
+	# timeType:D W
+	def GetQFQDataFromCSV(self,code,areaType,timeType):
+		filePath = './/HisData//'+areaType+"//"+timeType+'//'+code+'.csv'
 		if os.path.exists(filePath):
 			df = pd.read_csv(filePath,index_col=0)
 			return True,df
@@ -117,6 +119,10 @@ class DataControllerClass():
 
 
 # dataController = DataControllerClass()
+# res,df_csv= dataController.GetQFQDataFromCSV('000002.SZ','all','D')
+# print(res)
+# print(df_csv)
+
 # df_stockload = dataController.GetQFQData('000002.SZ','D','20200520','20200529')	
 # print(df_stockload.tail())
 # dataController.GetDataFromTencent('sz000002')

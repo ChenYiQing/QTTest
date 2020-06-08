@@ -67,11 +67,27 @@ class DataControllerClass():
 
 	# areaType:300 all 
 	# timeType:D W
-	def GetQFQDataFromCSV(self,code,areaType,timeType):
+	def GetQFQDataFromCSV(self,code,areaType,timeType,startTime,endTime):
 		filePath = './/HisData//'+areaType+"//"+timeType+'//'+code+'.csv'
+		foundStartDate = False
+		startIndex = 0
+		endIndex = 0
 		if os.path.exists(filePath):
 			df = pd.read_csv(filePath,index_col=0)
-			return True,df
+			for index in range(len(df.index)):
+				if not foundStartDate:
+					if str(df.loc[index,'trade_date'])>=startTime:
+						foundStartDate = True
+						startIndex = index
+						endIndex = index+1
+				else:
+					if str(df.loc[index,'trade_date'])<=endTime:
+						endIndex = index+1			
+
+			if foundStartDate:
+				return True,df[startIndex:endIndex].reset_index()
+			else:
+				return False,0
 		else:
 			return False,0
 
@@ -119,9 +135,10 @@ class DataControllerClass():
 
 
 # dataController = DataControllerClass()
-# res,df_csv= dataController.GetQFQDataFromCSV('000002.SZ','all','D')
+# res,df_csv= dataController.GetQFQDataFromCSV('000002.SZ','300','D','20180101','20190101')
 # print(res)
 # print(df_csv)
+
 
 # df_stockload = dataController.GetQFQData('000002.SZ','D','20200520','20200529')	
 # print(df_stockload.tail())

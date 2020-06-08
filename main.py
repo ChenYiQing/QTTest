@@ -5,6 +5,36 @@ import time
 import datetime as datetime
 
 
+
+def Get300List():
+	dataController = DataControllerClass()
+	df300s = dataController.GetHS300s()
+	df_all = dataController.ShowAllShares()
+
+	codeList = []
+	nameList = []
+	for index in df300s.index:
+	# for index in range(10):
+		initCode = df300s.loc[index,'code']
+		code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
+		codeList.append(code)
+		nameList.append(codeName)
+	return codeList,nameList
+
+	
+
+def GetAllList():
+	dataController = DataControllerClass()
+	df_all = dataController.ShowAllShares()
+	codeList = []
+	nameList = []
+	for index in df_all.index:
+		code = df_all.loc[index,'ts_code']
+		codeName = df_all.loc[index,'name']
+		codeList.append(code)
+		nameList.append(codeName)
+	return codeList,nameList
+
 def SingleTest():
 	dataController = DataControllerClass()
 	df300s = dataController.GetHS300s()
@@ -43,12 +73,9 @@ def SingleTest():
 
 
 
-def TotalTest():
+def TotalTest(areaType,timeType,startTime,endTime):
 	dataController = DataControllerClass()
 	df300s = dataController.GetHS300s()
-
-
-	# print(df300s)
 
 	df_all = dataController.ShowAllShares()
 	shortCount = 0
@@ -63,25 +90,22 @@ def TotalTest():
 	existTotal = 0
 	dayCover = []
 
+	codeList = []
+	nameList = []
+	if areaType=='300':
+		codeList,nameList = Get300List()
+	if areaType=='all':
+		codeList,nameList = GetAllList()
 
-	# 测试300指数
-	# for index in df300s.index:
-	# # for index in range(10):
-	# 	initCode = df300s.loc[index,'code']
-	# 	code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
-	# 	print(str(index)+':'+code +'-'+ codeName)
-
-	# 测试所有股票
-	for index in df_all.index:
-		code = df_all.loc[index,'ts_code']
-		codeName = df_all.loc[index,'name']
-		print(str(index)+':'+code +'-'+ codeName)
+	for i in range(len(codeList)):
+		print(str(i)+' '+codeList[i]+' '+nameList[i])
+		code = codeList[i]
 
 		# 线上获取
 		# df_stockload =  dataController.GetQFQData(code,'D','20190101','20200101')	
 		# df_stockload =  dataController.GetQFQData(code,'W','20180101','20190101')	
 		# 从csv载入 W
-		res,df_stockload = dataController.GetQFQDataFromCSV(code,'all','W')
+		res,df_stockload = dataController.GetQFQDataFromCSV(code,areaType,timeType,startTime,endTime)
 		if res:
 			if df_stockload is None:
 				pass
@@ -117,7 +141,8 @@ def TotalTest():
 	dayCover = list(set(dayCover))
 	print('日期覆盖')
 	print(len(dayCover))
-	print(dayCover)
+	# print(dayCover)
+
 	# shortDateList = list(set(shortDateList))
 	# print(len(shortDateList))
 
@@ -148,7 +173,7 @@ def PreHalfYearDate(time2):
 	return otherStyleTime
 
 # 实时监控
-def Infer(type):
+def Infer(areaType,timeType):
 	dataController = DataControllerClass()
 	df300s = dataController.GetHS300s()
 	df_all = dataController.ShowAllShares()
@@ -158,23 +183,23 @@ def Infer(type):
 	preHalfYear = PreHalfYearDate(currentTime)
 
 	findList = []
-	# 300指数
-	for index in df300s.index:
-	# for index in range(2):
-		print(index)
-		initCode = df300s.loc[index,'code']
-		code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
-		print(code+' '+codeName)
-	# 所有股票
-	# for index in df_all.index:
-	# 	code = df_all.loc[index,'ts_code']
-	# 	codeName = df_all.loc[index,'name']
-	# 	print(str(index)+' : '+code +' - '+ codeName)
 
+
+	codeList = []
+	nameList = []
+	if areaType=='300':
+		codeList,nameList = Get300List()
+	if areaType=='all':
+		codeList,nameList = GetAllList()
+
+	for i in range(len(codeList)):
+		code = codeList[i]
+		codeName = nameList[i]
+		print(str(i)+' '+code+' '+codeName)
 		if 'ST' in codeName:
 			pass
 		else:
-			if type =='D':
+			if timeType =='D':
 				df_stockload =  dataController.GetQFQData(code,'D',preMonth,currentTime)	
 				# 补充当天盘中数据
 				sinaCode = ''
@@ -190,7 +215,7 @@ def Infer(type):
 				else:
 					df_stockload.loc[id]=[code,date,float(open),float(high),float(low),float(current),'','','','','']
 
-			if type == 'W':
+			if timeType == 'W':
 				df_stockload =  dataController.GetQFQData(code,'W',preHalfYear,currentTime)
 				apiCode = ''
 				if 'SZ' in code:
@@ -284,15 +309,17 @@ def GetTodayDate():
 
 def main():
 	# SingleTest()
-	# TotalTest()
+	areaType = '300'
+	timeType = 'D'
+	startTime = '20180101'
+	endTime = '20190101'
+	TotalTest(areaType,timeType,startTime,endTime)
 	# Infer('W')
-	Infer('D')	
+	# Infer(areaType,timeType)
+
 
 if __name__ == '__main__':
 	main()
-
-
-
 
 
 

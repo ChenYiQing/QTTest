@@ -144,17 +144,3 @@ class ViewControllerClass():
 
 
 
-# viewController = ViewControllerClass()
-# df_stockload = web.DataReader("600797.SS", "yahoo", datetime.datetime(2018,1,1), datetime.date.today())
-# df_stockload['Ma20'] = df_stockload.Close.rolling(window=20).mean()
-# df_stockload['Ma30'] = df_stockload.Close.rolling(window=30).mean()
-# df_stockload['Ma60'] = df_stockload.Close.rolling(window=60).mean()
-
-
-# list_diff = np.sign(df_stockload['Ma20']-df_stockload['Ma60'])	
-# list_signal = np.sign(list_diff-list_diff.shift(1))
-
-# viewController.SetShareData(df_stockload)
-# viewController.SetTitle("自定义标题")
-# viewController.DrawDealPoint(list_signal)
-# viewController.ShowChart()

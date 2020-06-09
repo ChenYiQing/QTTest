@@ -40,7 +40,7 @@ for i in df300s.index:
 
 	print(name+" "+code)
 
-	df_stockload =  dataController.GetQFQData(code)	
+	df_stockload =  dataController.GetQFQData(code,'D','20190101','20200101')	
 	df_stockload  = dataController.GetFullData(df_stockload)
 
 	list_diff = np.sign(df_stockload['Ma20']-df_stockload['Ma60'])	

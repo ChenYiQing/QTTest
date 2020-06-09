@@ -73,9 +73,8 @@ def SingleTest():
 
 
 
-def TotalTest(areaType,timeType,startTime,endTime):
+def TotalTest(areaType,timeType,startTime,endTime,alpha):
 	dataController = DataControllerClass()
-	df300s = dataController.GetHS300s()
 
 	df_all = dataController.ShowAllShares()
 	shortCount = 0
@@ -114,7 +113,7 @@ def TotalTest(areaType,timeType,startTime,endTime):
 				strategyController = StrategyControllerClass()
 				# total = strategyController.Strategy01(df_stockload)
 				# total,shortTimes,longTimes,shortDate,daysList = strategyController.Strategy02(df_stockload,False)
-				win,loss,tradeDateList = strategyController.Strategy02(df_stockload,False)
+				win,loss,tradeDateList = strategyController.Strategy02(df_stockload,alpha,True)
 				dayCover = dayCover + tradeDateList
 				# shortDateList = shortDateList+shortDate
 				# keepDaysList = keepDaysList+daysList
@@ -195,6 +194,8 @@ def Infer(areaType,timeType):
 	for i in range(len(codeList)):
 		code = codeList[i]
 		codeName = nameList[i]
+		# if i<1400:
+		# 	continue
 		print(str(i)+' '+code+' '+codeName)
 		if 'ST' in codeName:
 			pass
@@ -222,18 +223,17 @@ def Infer(areaType,timeType):
 					apiCode = 'sz'+code[0:6]
 				if 'SH' in code:
 					apiCode = 'sh'+code[0:6]
-				open,close,high,low,date = dataController.GetDataFromTencent(apiCode)
-
-				print(open+' '+close+' '+high+' '+low+' '+date)
-				id = df_stockload.shape[0]
-				if len(df_stockload.index)<10:
-					pass
-				else: 
-					if df_stockload.loc[id-1,'trade_date']==date:
+				res,open,close,high,low,date = dataController.GetDataFromTencent(apiCode)
+				if res:
+					print(open+' '+close+' '+high+' '+low+' '+date)
+					id = df_stockload.shape[0]
+					if len(df_stockload.index)<10:
 						pass
-					else:
-						df_stockload.loc[id]=[code,date,float(close),float(open),float(high),float(low),'','','','','']
-
+					else: 
+						if df_stockload.loc[id-1,'trade_date']==date:
+							pass
+						else:
+							df_stockload.loc[id]=[code,date,float(close),float(open),float(high),float(low),'','','','','']
 			if df_stockload is None or len(df_stockload.index)<10:
 				pass
 			else:
@@ -306,16 +306,38 @@ def GetTodayDate():
 
 
 
+# 显示折线图
+def ShowChart():
+	dataController = DataControllerClass()
+	code = '000651.sz'
+	df_stockload =  dataController.GetQFQData(code,'D','20190101','20200101')
+
+	print(df_stockload)
+	print(df_stockload['trade_date'])
+	df_stockload  = dataController.GetFullData(df_stockload)
+
+	list_diff = np.sign(df_stockload['Ma20']-df_stockload['Ma60'])	
+	list_signal = np.sign(list_diff-list_diff.shift(1))
+
+
+	viewController = ViewControllerClass()
+
+	viewController.SetShareData(df_stockload)
+	viewController.SetTitle(code+"-格力电器")
+	viewController.DrawDealPoint(list_signal)
+	viewController.ShowChart()
+
 
 def main():
 	# SingleTest()
-	areaType = '300'
-	timeType = 'D'
-	startTime = '20180101'
-	endTime = '20190101'
-	TotalTest(areaType,timeType,startTime,endTime)
-	# Infer('W')
-	# Infer(areaType,timeType)
+	areaType = 'all'
+	timeType = 'W'
+	startTime = '20190101'
+	endTime = '20200101'
+	alpha = 0.01
+	# TotalTest(areaType,timeType,startTime,endTime,alpha)
+	Infer(areaType,timeType)
+	# ShowChart()
 
 
 if __name__ == '__main__':

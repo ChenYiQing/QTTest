@@ -57,8 +57,8 @@ class StrategyControllerClass():
 		total = self.GetSellPointAndTotalValue(list_signal,df_data,True)
 		print(total)
 
-	# 策略2 周K 底分型 下下上上上 买入 盈利0.01止盈 亏损0.01止损
-	def Strategy02(self,df_data,printInfo):
+	# 策略2 周K 底分型 下下上上上 买入 盈利alpha止盈 亏损alpha止损
+	def Strategy02(self,df_data,alpha,printInfo):
 		total = 0		
 		totalWith30Days = 0
 		ShortTradeTimes = 0
@@ -89,17 +89,19 @@ class StrategyControllerClass():
 				H0 = df_data.loc[index-5,'high']
 				L0 = df_data.loc[index-5,'low']
 				# 满足下下上上上
-				# if closeValue>openValue and H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1:
 				if H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1:
-
+				# 满足依次升降
+				# flag1 = H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1
+				# flag2 = H4>L5 and H3>L4 and H2>L3 and H2>L1 and H1>L0 
+				# if flag1 and flag2:
 					if printInfo:
 						print(str(df_data.loc[index,'trade_date'])+' DDUUU')
 						print(str(df_data.loc[index,'close'])+' with buy')
 					buyPoint = df_data.loc[index,'close']
 					# 盈亏
 					cursor = index+1
-					winAlpha = 0.01
-					lossAlpha = 0.01
+					winAlpha = alpha
+					lossAlpha = alpha
 
 					# while abs(df_data.loc[cursor,'high']-buyPoint)/buyPoint < alpha or abs(df_data.loc[cursor,'low']-buyPoint)/buyPoint < alpha:
 					# 止盈不止损

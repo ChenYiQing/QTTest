@@ -124,12 +124,15 @@ class DataControllerClass():
 		list = content.split('\n')
 		item = list[-2]
 		values = item.split(' ')
-		date = '20'+values[0][0:2]+values[0][2:4]+values[0][4:6]
-		open = values[1]
-		close = values[2]
-		high = values[3]
-		low = values[4]
-		return open,close,high,low,date
+		if len(values)==6:
+			date = '20'+values[0][0:2]+values[0][2:4]+values[0][4:6]
+			open = values[1]
+			close = values[2]
+			high = values[3]
+			low = values[4]
+			return True,open,close,high,low,date
+		else:
+			return False,0,0,0,0,0
 
 
 

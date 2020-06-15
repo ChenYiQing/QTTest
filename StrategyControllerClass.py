@@ -70,6 +70,9 @@ class StrategyControllerClass():
 		totalWinTimes = 0
 		totalLossTimes= 0
 
+		# 日期列表 用于显示图表
+		winDatelist = []
+		lossDateList = []
 
 		for index in df_data.index:
 			if index > 6 and index< df_data.shape[0]-1:
@@ -94,9 +97,15 @@ class StrategyControllerClass():
 				# flag1 = H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1
 				# flag2 = H4>L5 and H3>L4 and H2>L3 and H2>L1 and H1>L0 
 				# if flag1 and flag2:
+
+				# 满足 下下上上上 且 价格>10
+				# flag1 = H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1
+				# flag2 = closeValue>10
+				# if flag1 and flag2:
 					if printInfo:
 						print(str(df_data.loc[index,'trade_date'])+' DDUUU')
 						print(str(df_data.loc[index,'close'])+' with buy')
+					buyDate = str(df_data.loc[index,'trade_date'])
 					buyPoint = df_data.loc[index,'close']
 					# 盈亏
 					cursor = index+1
@@ -115,6 +124,7 @@ class StrategyControllerClass():
 
 							totalWinTimes = totalWinTimes+1
 							tradeDateList.append(str(df_data.loc[cursor,'trade_date']))
+							winDatelist.append(buyDate)
 							break
 
 						# 超过0.01 止损
@@ -124,6 +134,7 @@ class StrategyControllerClass():
 								print(str(df_data.loc[cursor,'trade_date'])+' for loss')
 							totalLossTimes = totalLossTimes+1
 							tradeDateList.append(str(df_data.loc[cursor,'trade_date']))
+							lossDateList.append(buyDate)
 							break
 
 						if df_data.shape[0]-1 >cursor:
@@ -158,7 +169,7 @@ class StrategyControllerClass():
 			print('累计盈亏：'+str(total))
 			print('断线盈亏：'+str(totalWith30Days))
 		# return totalWith30Days,ShortTradeTimes,LongTradeTimes,ShortDateList,daysList
-		return totalWinTimes,totalLossTimes,tradeDateList
+		return totalWinTimes,totalLossTimes,tradeDateList,winDatelist,lossDateList
 
 	def Strategy02Infer(self,df_data):
 		index = df_data.shape[0]-1

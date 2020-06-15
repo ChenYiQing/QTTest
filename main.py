@@ -69,10 +69,15 @@ def SingleTest():
 	win,loss,tradeDateList = strategyController.Strategy02(df_stockload,False)
 
 
-	# 可视化 查看亏损原因
+# 可视化 查看亏损原因
+def CallShowChart(lossDateMap):
+	for key in lossDateMap:
+		dateList = lossDateMap[key]
+		for item in dateList:
+			ShowChart(key,item)
 
 
-
+# 历史数据测试
 def TotalTest(areaType,timeType,startTime,endTime,alpha):
 	dataController = DataControllerClass()
 
@@ -91,6 +96,10 @@ def TotalTest(areaType,timeType,startTime,endTime,alpha):
 
 	codeList = []
 	nameList = []
+
+	lossDateMap = {}
+	winDateMap = {}
+
 	if areaType=='300':
 		codeList,nameList = Get300List()
 	if areaType=='all':
@@ -113,8 +122,14 @@ def TotalTest(areaType,timeType,startTime,endTime,alpha):
 				strategyController = StrategyControllerClass()
 				# total = strategyController.Strategy01(df_stockload)
 				# total,shortTimes,longTimes,shortDate,daysList = strategyController.Strategy02(df_stockload,False)
-				win,loss,tradeDateList = strategyController.Strategy02(df_stockload,alpha,True)
+				win,loss,tradeDateList,winDatelist,lossDateList = strategyController.Strategy02(df_stockload,alpha,False)
 				dayCover = dayCover + tradeDateList
+
+				if len(winDatelist)!=0:
+					winDateMap[code] = winDatelist
+				if len(lossDateList)!=0:
+					lossDateMap[code]  = lossDateList
+
 				# shortDateList = shortDateList+shortDate
 				# keepDaysList = keepDaysList+daysList
 				winTotal = winTotal + win
@@ -141,6 +156,9 @@ def TotalTest(areaType,timeType,startTime,endTime,alpha):
 	print('日期覆盖')
 	print(len(dayCover))
 	# print(dayCover)
+
+	# 显示图表
+	# CallShowChart(lossDateMap)
 
 	# shortDateList = list(set(shortDateList))
 	# print(len(shortDateList))
@@ -170,6 +188,16 @@ def PreHalfYearDate(time2):
 	timeStamp =int(time.mktime(threeDayAgo.timetuple()))
 	otherStyleTime = threeDayAgo.strftime("%Y%m%d")
 	return otherStyleTime
+
+
+def PreYearDate(time2):
+	now_time = datetime.datetime.strptime(time2, '%Y%m%d')
+	threeDayAgo = (now_time - datetime.timedelta(days =365))
+	timeStamp =int(time.mktime(threeDayAgo.timetuple()))
+	otherStyleTime = threeDayAgo.strftime("%Y%m%d")
+	return otherStyleTime
+
+
 
 # 实时监控
 def Infer(areaType,timeType):
@@ -306,31 +334,33 @@ def GetTodayDate():
 
 
 
-# 显示折线图
-def ShowChart():
+# 显示走势图
+def ShowChart(code,date):
 	dataController = DataControllerClass()
-	code = '000651.sz'
-	df_stockload =  dataController.GetQFQData(code,'D','20190101','20200101')
+	# code = '000651.sz'
+	preYear = PreYearDate(date)
+	# df_stockload =  dataController.GetQFQData(code,'D',preYear,date)
+	res,df_stockload = dataController.GetQFQDataFromCSV(code,'300','D',preYear,date)
+	if res:
+		# print(df_stockload)
+		# print(df_stockload['trade_date'])
+		df_stockload  = dataController.GetFullData(df_stockload)
 
-	print(df_stockload)
-	print(df_stockload['trade_date'])
-	df_stockload  = dataController.GetFullData(df_stockload)
-
-	list_diff = np.sign(df_stockload['Ma20']-df_stockload['Ma60'])	
-	list_signal = np.sign(list_diff-list_diff.shift(1))
+		list_diff = np.sign(df_stockload['Ma20']-df_stockload['Ma60'])	
+		list_signal = np.sign(list_diff-list_diff.shift(1))
 
 
-	viewController = ViewControllerClass()
+		viewController = ViewControllerClass()
 
-	viewController.SetShareData(df_stockload)
-	viewController.SetTitle(code+"-格力电器")
-	viewController.DrawDealPoint(list_signal)
-	viewController.ShowChart()
+		viewController.SetShareData(df_stockload)
+		viewController.SetTitle(code)
+		# viewController.DrawDealPoint(list_signal)
+		viewController.ShowChart()
 
 
 def main():
 	# SingleTest()
-	areaType = 'all'
+	areaType = '300'
 	timeType = 'W'
 	startTime = '20190101'
 	endTime = '20200101'
@@ -342,6 +372,8 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+
 
 
 

@@ -362,11 +362,11 @@ def main():
 	# SingleTest()
 	areaType = '300'
 	timeType = 'W'
-	startTime = '20190101'
-	endTime = '20200101'
-	alpha = 0.01
-	# TotalTest(areaType,timeType,startTime,endTime,alpha)
-	Infer(areaType,timeType)
+	startTime = '20180101'
+	endTime = '20190101'
+	alpha = 0.04
+	TotalTest(areaType,timeType,startTime,endTime,alpha)
+	# Infer(areaType,timeType)
 	# ShowChart()
 
 

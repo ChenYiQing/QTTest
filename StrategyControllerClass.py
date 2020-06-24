@@ -73,7 +73,6 @@ class StrategyControllerClass():
 		# 日期列表 用于显示图表
 		winDatelist = []
 		lossDateList = []
-
 		for index in df_data.index:
 			if index > 6 and index< df_data.shape[0]-1:
 				openValue = df_data.loc[index,'open']
@@ -91,8 +90,12 @@ class StrategyControllerClass():
 				L1 = df_data.loc[index-4,'low']
 				H0 = df_data.loc[index-5,'high']
 				L0 = df_data.loc[index-5,'low']
+
+				amount5 = df_data.loc[index,'amount']
+				amount4 = df_data.loc[index-1,'amount']
+				amount3 = df_data.loc[index-2,'amount']
 				# 满足下下上上上
-				if H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1:
+				# if H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1:
 				# 满足依次升降
 				# flag1 = H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1
 				# flag2 = H4>L5 and H3>L4 and H2>L3 and H2>L1 and H1>L0 
@@ -102,6 +105,11 @@ class StrategyControllerClass():
 				# flag1 = H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1
 				# flag2 = closeValue>10
 				# if flag1 and flag2:
+
+				flag1 = H5>H4 and L5>L4 and H4>H3 and L4>L3 and H3>H2 and L3>L2 and H1>H2 and L1>L2 and H0>H1 and L0>L1
+				flag2 = amount5 > amount4 and amount4 > amount3
+
+				if flag1:
 					if printInfo:
 						print(str(df_data.loc[index,'trade_date'])+' DDUUU')
 						print(str(df_data.loc[index,'close'])+' with buy')
@@ -123,7 +131,7 @@ class StrategyControllerClass():
 								print(str(df_data.loc[cursor,'trade_date'])+' for win')
 
 							totalWinTimes = totalWinTimes+1
-							tradeDateList.append(str(df_data.loc[cursor,'trade_date']))
+							tradeDateList.append(buyDate)
 							winDatelist.append(buyDate)
 							break
 
@@ -133,7 +141,7 @@ class StrategyControllerClass():
 							if printInfo:
 								print(str(df_data.loc[cursor,'trade_date'])+' for loss')
 							totalLossTimes = totalLossTimes+1
-							tradeDateList.append(str(df_data.loc[cursor,'trade_date']))
+							tradeDateList.append(buyDate)
 							lossDateList.append(buyDate)
 							break
 

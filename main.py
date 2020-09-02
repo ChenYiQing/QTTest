@@ -173,6 +173,40 @@ def TotalTest(areaType,timeType,startTime,endTime,alpha):
 	# print(testMap)
 
 
+# 历史数据测试 前后分型概率
+
+def StatisticsFunc(areaType,timeType,startTime,endTime):
+	dataController = DataControllerClass()
+	totalA = 0
+	totalB = 0
+	totalC = 0
+	totalD = 0
+
+	# df_all = dataController.ShowAllShares()
+	if areaType=='300':
+		codeList,nameList = Get300List()
+	if areaType=='all':
+		codeList,nameList = GetAllList()
+
+	for i in range(len(codeList)):
+		print(str(i)+' '+codeList[i]+' '+nameList[i])
+		code = codeList[i]
+
+		res,df_stockload = dataController.GetQFQDataFromCSV(code,areaType,timeType,startTime,endTime)
+		if res:
+			if df_stockload is None:
+				pass
+			else:
+				strategyController = StrategyControllerClass()
+				typeA,typeB,typeC,typeD = strategyController.StategyCount2K(df_stockload)
+				totalA = totalA + typeA
+				totalB = totalB + typeB
+				totalC = totalC + typeC
+				totalD = totalD + typeD
+	print(totalA/(totalA+totalB+totalC+totalD))
+	print(totalB/(totalA+totalB+totalC+totalD))
+	print(totalC/(totalA+totalB+totalC+totalD))
+	print(totalD/(totalA+totalB+totalC+totalD))
 
 # 获取1个月前的时间
 def PreMonthDate(time2):
@@ -361,14 +395,14 @@ def ShowChart(code,date):
 def main():
 	# SingleTest()
 	areaType = '300'
-	timeType = 'W'
-	startTime = '20180101'
+	timeType = 'D'
+	startTime = '20090101'
 	endTime = '20190101'
 	alpha = 0.04
-	TotalTest(areaType,timeType,startTime,endTime,alpha)
+	# TotalTest(areaType,timeType,startTime,endTime,alpha)
 	# Infer(areaType,timeType)
 	# ShowChart()
-
+	StatisticsFunc(areaType,timeType,startTime,endTime)
 
 if __name__ == '__main__':
 	main()

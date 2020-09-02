@@ -200,6 +200,28 @@ class StrategyControllerClass():
 			return False
 
 
+	# 统计 前后两个K线的不同组合概率
+	def StategyCount2K(self,df_data):
+		typeA = 0
+		typeB = 0
+		typeC = 0
+		typeD = 0
+
+		for index in df_data.index:
+			if index !=0:
+				lastHigh = df_data.loc[index-1,'high']
+				lastLow = df_data.loc[index-1,'low']
+				high = df_data.loc[index,'high']
+				low = df_data.loc[index,'low']
+				if lastHigh<high and lastLow<low:
+					typeA = typeA+1
+				if lastHigh<high and lastLow>low:
+					typeB = typeB+1
+				if lastHigh>high and lastLow<low:
+					typeC = typeC+1
+				if lastHigh>high and lastLow>low:
+					typeD = typeD+1
+		return typeA,typeB,typeC,typeD
 
 	def test(self,df_data):
 		list_diff = np.sign(df_data['Ma20']-df_data['Ma60'])

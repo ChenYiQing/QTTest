@@ -1,39 +1,16 @@
 from ViewControllerClass import *
 from DataControllerClass import *
 from StrategyControllerClass import *
+from Strategylib import *
 import time
 import datetime as datetime
 
 
 
-def Get300List():
-	dataController = DataControllerClass()
-	df300s = dataController.GetHS300s()
-	df_all = dataController.ShowAllShares()
 
-	codeList = []
-	nameList = []
-	for index in df300s.index:
-	# for index in range(10):
-		initCode = df300s.loc[index,'code']
-		code,codeName = dataController.GetCodeInfoFromDFAll(df_all,initCode)
-		codeList.append(code)
-		nameList.append(codeName)
-	return codeList,nameList
 
 	
 
-def GetAllList():
-	dataController = DataControllerClass()
-	df_all = dataController.ShowAllShares()
-	codeList = []
-	nameList = []
-	for index in df_all.index:
-		code = df_all.loc[index,'ts_code']
-		codeName = df_all.loc[index,'name']
-		codeList.append(code)
-		nameList.append(codeName)
-	return codeList,nameList
 
 def SingleTest():
 	dataController = DataControllerClass()
@@ -395,14 +372,15 @@ def ShowChart(code,date):
 def main():
 	# SingleTest()
 	areaType = '300'
-	timeType = 'D'
+	timeType = 'W'
 	startTime = '20090101'
 	endTime = '20190101'
 	alpha = 0.04
 	# TotalTest(areaType,timeType,startTime,endTime,alpha)
 	# Infer(areaType,timeType)
 	# ShowChart()
-	StatisticsFunc(areaType,timeType,startTime,endTime)
+	# StatisticsOneKLine(areaType,timeType,startTime,endTime)
+	CallPrintTopAndButtom(areaType,timeType,startTime,endTime)
 
 if __name__ == '__main__':
 	main()

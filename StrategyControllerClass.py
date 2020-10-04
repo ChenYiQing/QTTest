@@ -200,6 +200,29 @@ class StrategyControllerClass():
 			return False
 
 
+
+
+
+	# 打印 顶分型 底分型
+	def PrintTopAndButtom(self,df_data):
+		for index in df_data.index:
+			if index >2:
+				last2High = df_data.loc[index-2,'high']
+				last2Low = df_data.loc[index-2,'low']
+				lastHigh= df_data.loc[index-1,'high']
+				lastLow = df_data.loc[index-1,'low']
+				high= df_data.loc[index,'high']
+				low= df_data.loc[index,'low']
+				# 底分型
+				if last2High>lastHigh and last2Low > lastLow and lastHigh<high and lastLow<low:
+					print('底分型')
+					print(str(df_data.loc[index,'trade_date'])+' '+str(df_data.loc[index,'close']))
+
+				# 顶分型
+				if last2High<lastHigh and last2Low<lastLow and lastHigh>high and lastLow >low:
+					print('顶分型')
+					print(str(df_data.loc[index,'trade_date'])+' '+str(df_data.loc[index,'close']))
+
 	# 统计 前后两个K线的不同组合概率
 	def StategyCount2K(self,df_data):
 		typeA = 0

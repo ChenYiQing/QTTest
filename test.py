@@ -1,7 +1,7 @@
 from ViewControllerClass import *
 from DataControllerClass import *
 from StrategyControllerClass import *
-
+from SimulatorDealClass import *
 
 
 dataController = DataControllerClass()
@@ -30,7 +30,12 @@ totalList = []
 profitList = []
 lossList = []
 
+
+strategyController = StrategyControllerClass()
+
+simulatorDealIns = SimulatorDealClass()
 for i in df300s.index:
+# for i in range(5):
 	name = df300s.loc[i]['name']
 	code  = df300s.loc[i]['code']
 	if code+'.SZ' in df_all['ts_code'].values:
@@ -38,31 +43,47 @@ for i in df300s.index:
 	if code+'.SH' in df_all['ts_code'].values:
 		code = code+'.SH'
 
-	print(name+" "+code)
+	# focusList = ['格力电器','万科A','新 希 望','海康威视','招商银行','同仁堂']
+	res,df_stockload = dataController.GetQFQDataFromCSV(code,'300','D','20100101','20200101')
+	if res:
+		if df_stockload is None:
+			pass
+		else:
+			retShareNum,retWinOrLost = simulatorDealIns.RunSimulator(df_stockload)
+			# if name in focusList:
+			print(name+" "+code+" "+ str(retShareNum)+" "+str(retWinOrLost*100))
 
-	df_stockload =  dataController.GetQFQData(code,'D','20190101','20200101')	
-	df_stockload  = dataController.GetFullData(df_stockload)
 
-	list_diff = np.sign(df_stockload['Ma20']-df_stockload['Ma60'])	
-	list_signal = np.sign(list_diff-list_diff.shift(1))
+
+
+
+	# df_stockload =  dataController.GetQFQData(code,'D','20190101','20200101')	
+	# print(df_stockload)
+	# df_stockload  = dataController.GetFullData(df_stockload)
+
+
+
+	# list_diff = np.sign(df_stockload['Ma20']-df_stockload['Ma60'])	
+	# list_signal = np.sign(list_diff-list_diff.shift(1))
 
 	#策略--------
-	strategyController = StrategyControllerClass()
-	total = strategyController.test(df_stockload)
-	total = round(total,2)
-	totalList.append(total)
-	print(total) 
-	if total > 0:
-		profitList.append(total)
-	else:
-		lossList.append(total)
+	# strategyController = StrategyControllerClass()
+	# total = strategyController.test(df_stockload)
+	# total = round(total,2)
+	# totalList.append(total)
+	# print(total) 
+	# if total > 0:
+	# 	profitList.append(total)
+	# else:
+	# 	lossList.append(total)
 
-print("profit:")
-print(len(profitList))
-print(sum(profitList))
-print("loss:")
-print(len(lossList))
-print(sum(lossList))
+
+# print("profit:")
+# print(len(profitList))
+# print(sum(profitList))
+# print("loss:")
+# print(len(lossList))
+# print(sum(lossList))
 
 # np.savetxt("save.csv", totalList, delimiter=',')
 
